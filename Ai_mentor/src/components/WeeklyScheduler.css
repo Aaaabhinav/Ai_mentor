@@ -1,0 +1,94 @@
+.weekly-scheduler {
+  padding: 20px;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.weekly-scheduler h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sections-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  gap: 20px;
+}
+
+.expectation-section,
+.achiever-section {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #ad4949;
+  min-width: 500px;
+}
+
+.expectation-section h2,
+.achiever-section h2 {
+ /* margin-bottom: 15px;*/
+}
+
+.expectation-section textarea,
+.achiever-section textarea {
+  width: 100%;
+ /* padding: 10px;*/
+  font-size: 16px;
+  /*margin-bottom: 10px;*/
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  /*resize: vertical;*/
+}
+
+.achiever-section .day-input {
+  /*margin-bottom: 15px;*/
+}
+
+.achiever-section label {
+  display: block;
+  font-weight: bold;
+ /* margin-bottom: 5px;*/
+}
+
+.evaluate-button {
+  margin: 20px 0;
+}
+
+.evaluate-button button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.evaluate-button button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.evaluate-button button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.evaluation-result {
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #c53333;
+  margin-top: 20px;
+}
+
+.evaluation-result h2 {
+  margin-bottom: 10px;
+}
