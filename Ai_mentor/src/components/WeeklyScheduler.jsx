@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import ExpectationSection from './ExpectationSection';
 import AchieverSection from './AchieverSection';
@@ -18,11 +18,28 @@ function WeeklyScheduler() {
   });
   const [evaluationResult, setEvaluationResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Replace with your Google API key
 
-  const API_KEY = 'Your API key';
+  const API_KEY = 'your api key';
   const genAI = new GoogleGenerativeAI(API_KEY);
+
+  // Function to list available models
+  const listAvailableModels = async () => {
+    try {
+      const models = await genAI.listModels();
+      console.log('Available models for weekly scheduler:', models);
+    } catch (error) {
+      console.error('Error listing models:', error);
+      setError(`Error listing models: ${error.message}`);
+    }
+  };
+
+  // Call listAvailableModels when the component mounts
+  useEffect(() => {
+    listAvailableModels();
+  }, []);
 
   const handleEvaluate = async () => {
     if (!expectation.trim()) {
@@ -31,6 +48,7 @@ function WeeklyScheduler() {
     }
 
     setIsLoading(true);
+    setError('');
 
     try {
       // Prepare the prompt for Gemini API
@@ -43,8 +61,17 @@ function WeeklyScheduler() {
         
         Provide a detailed comparison and suggestions for improvement.`;
 
+      // Updated to use the correct model name for Gemini 1.5 Pro
+      // Try with 'gemini-1.5-pro' first, if that fails fall back to 'gemini-pro'
+      let model;
+      try {
+        model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+      } catch (modelError) {
+        console.log('Falling back to gemini-pro model');
+        model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      }
+
       // Call the Gemini API
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
@@ -53,7 +80,9 @@ function WeeklyScheduler() {
       setEvaluationResult(text);
     } catch (error) {
       console.error('Error generating evaluation:', error);
-      setEvaluationResult('Failed to generate evaluation. Please try again.');
+      const errorMessage = `Failed to generate evaluation: ${error.message}. Please check your API key and model access.`;
+      setError(errorMessage);
+      setEvaluationResult(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -71,6 +100,7 @@ function WeeklyScheduler() {
           {isLoading ? 'Evaluating...' : 'Evaluate'}
         </button>
       </div>
+      {error && <div className="error-message">{error}</div>}
       <EvaluationResult result={evaluationResult} />
     </div>
   );
