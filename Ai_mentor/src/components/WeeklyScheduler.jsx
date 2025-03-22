@@ -19,9 +19,8 @@ function WeeklyScheduler() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Replace with your Google API key
-
-  const API_KEY = 'your api key';
+  // Use API key from environment variables
+  const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
   const genAI = new GoogleGenerativeAI(API_KEY);
 
   // Function to list available models
