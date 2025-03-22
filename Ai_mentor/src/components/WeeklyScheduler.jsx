@@ -3,7 +3,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import ExpectationSection from './ExpectationSection';
 import AchieverSection from './AchieverSection';
 import EvaluationResult from './EvaluationResult';
-import './WeeklyScheduler.css';
 
 function WeeklyScheduler() {
   const [expectation, setExpectation] = useState('');
@@ -89,19 +88,37 @@ function WeeklyScheduler() {
   };
 
   return (
-    <div className="weekly-scheduler">
-      <h1>Weekly Scheduler</h1>
-      <div className="sections-container">
-        <ExpectationSection expectation={expectation} setExpectation={setExpectation} />
-        <AchieverSection achievements={achievements} setAchievements={setAchievements} />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">Weekly Scheduler</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6">
+            <ExpectationSection expectation={expectation} setExpectation={setExpectation} />
+          </div>
+          <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6">
+            <AchieverSection achievements={achievements} setAchievements={setAchievements} />
+          </div>
+        </div>
+        
+        <div className="flex justify-center mb-8">
+          <button 
+            onClick={handleEvaluate} 
+            disabled={isLoading} 
+            className={`text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+          >
+            {isLoading ? 'Evaluating...' : 'Evaluate'}
+          </button>
+        </div>
+        
+       
+        
+        {evaluationResult && (
+          <div className="mb-8">
+            <EvaluationResult result={evaluationResult} />
+          </div>
+        )}
       </div>
-      <div className="evaluate-button">
-        <button onClick={handleEvaluate} disabled={isLoading}>
-          {isLoading ? 'Evaluating...' : 'Evaluate'}
-        </button>
-      </div>
-      {error && <div className="error-message">{error}</div>}
-      <EvaluationResult result={evaluationResult} />
     </div>
   );
 }

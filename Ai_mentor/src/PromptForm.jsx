@@ -12,7 +12,7 @@ const PromptForm = ({ onResponse }) => {
   const fileInputRef = useRef(null);
 
   // Replace with your Google API key
-  const API_KEY = 'AIzaSyCKlzvue7-sXoEr32rkLLgxgIv9PwGk1h4';
+  const API_KEY = 'your api key';
   const genAI = new GoogleGenerativeAI(API_KEY);
 
   // Function to list available models
@@ -358,8 +358,8 @@ ${prompt.trim() ? `Additional evaluation criteria provided by instructor: ${prom
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter specific criteria or focus areas for evaluating this assignment..."
-          rows={4}
+          placeholder="Enter specific criteria or "
+          rows={3}
           disabled={isLoading}
         />
       </div>
@@ -368,7 +368,7 @@ ${prompt.trim() ? `Additional evaluation criteria provided by instructor: ${prom
         {isLoading ? 'Evaluating...' : 'Evaluate Assignment'}
       </button>
       
-      {error && <div className="error-message">{error}</div>}
+     
     </form>
   );
 };

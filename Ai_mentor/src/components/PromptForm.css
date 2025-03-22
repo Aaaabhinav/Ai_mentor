@@ -54,7 +54,7 @@
 }
 
 .prompt-form textarea {
-  width: 100%;
+  width: 100;
   padding: 12px;
   border: 1px solid #ced4da;
   border-radius: 4px;
@@ -100,6 +100,9 @@
   
   .prompt-form textarea {
     font-size: 14px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .prompt-form button[type="submit"] {
