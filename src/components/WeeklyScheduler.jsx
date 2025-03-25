@@ -87,34 +87,66 @@ function WeeklyScheduler() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">Weekly Scheduler</h1>
+    <div className="min-h-screen bg-gray-900 py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto space-y-12">
+        <h1 className="text-4xl font-bold text-center py-1 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          Weekly Scheduler
+        </h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6">
-            <ExpectationSection expectation={expectation} setExpectation={setExpectation} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="feature-card overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl shadow-xl">
+            <div className="p-6 bg-gradient-to-r from-purple-500/90 to-purple-700/90 border-b border-purple-600/30">
+              <h2 className="text-2xl font-semibold text-white">Weekly Expectations</h2>
+            </div>
+            <div className="p-6">
+              <ExpectationSection expectation={expectation} setExpectation={setExpectation} />
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6">
-            <AchieverSection achievements={achievements} setAchievements={setAchievements} />
+          
+          <div className="feature-card overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl shadow-xl">
+            <div className="p-6 bg-gradient-to-r from-purple-500/90 to-purple-700/90 border-b border-purple-600/30">
+              <h2 className="text-2xl font-semibold text-white">Daily Achievements</h2>
+            </div>
+            <div className="p-6">
+              <AchieverSection achievements={achievements} setAchievements={setAchievements} />
+            </div>
           </div>
         </div>
         
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center">
           <button 
             onClick={handleEvaluate} 
             disabled={isLoading} 
-            className={`text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            className={`px-8 py-3 text-base font-medium rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-200 transform hover:-translate-y-0.5 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            {isLoading ? 'Evaluating...' : 'Evaluate'}
+            {isLoading ? (
+              <span className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Evaluating...
+              </span>
+            ) : (
+              'Evaluate Progress'
+            )}
           </button>
         </div>
         
-       
+        {error && (
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+            {error}
+          </div>
+        )}
         
         {evaluationResult && (
-          <div className="mb-8">
-            <EvaluationResult result={evaluationResult} />
+          <div className="feature-card overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl shadow-xl">
+            <div className="p-6 bg-gradient-to-r from-purple-500/90 to-purple-700/90 border-b border-purple-600/30">
+              <h2 className="text-2xl font-semibold text-white">Evaluation Results</h2>
+            </div>
+            <div className="p-6">
+              <EvaluationResult result={evaluationResult} />
+            </div>
           </div>
         )}
       </div>

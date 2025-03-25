@@ -9,6 +9,7 @@ const PromptForm = ({ onResponse }) => {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [fileContent, setFileContent] = useState('');
+  const [response, setResponse] = useState(null);
   const fileInputRef = useRef(null);
 
   // Use API key from environment variables
@@ -36,55 +37,24 @@ const PromptForm = ({ onResponse }) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
 
-    // Check file size (limit to 10MB)
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      setError('File too large. Please upload a file smaller than 10MB.');
-      return;
-    }
-
-    // Check file type
-    const validTypes = ['application/pdf', 'text/plain', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/csv'];
-    if (!validTypes.includes(selectedFile.type)) {
-      setError('Unsupported file type. Please upload PDF, TXT, DOCX, or CSV files.');
-      return;
-    }
-
     setFile(selectedFile);
     setFileName(selectedFile.name);
-    setError('');
-
-    try {
-      const content = await readFileContent(selectedFile);
-      setFileContent(content);
-    } catch (error) {
-      console.error('Error reading file:', error);
-      setError(`Failed to read file: ${error.message}`);
-    }
+    
+    // Read file content
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      setFileContent(e.target.result);
+    };
+    reader.readAsText(selectedFile);
   };
 
-  // Read file content based on file type
-  const readFileContent = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        resolve(event.target.result);
-      };
-      
-      reader.onerror = (error) => {
-        reject(error);
-      };
-      
-      // Read as text for supported formats
-      if (file.type === 'text/plain' || file.type === 'text/csv') {
-        reader.readAsText(file);
-      } else {
-        // For other formats, read as binary string
-        // Note: For PDF and DOCX, this will get raw binary data
-        // In a production app, you'd want to use specialized libraries for parsing
-        reader.readAsText(file);
-      }
-    });
+  const handleRemoveFile = () => {
+    setFile(null);
+    setFileName('');
+    setFileContent('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   // Clear file selection
@@ -316,6 +286,7 @@ ${prompt.trim() ? `Additional evaluation criteria provided by instructor: ${prom
       }
 
       // Pass both the response text and structured data to the parent component
+      setResponse(text);
       onResponse(text, structuredData);
     } catch (error) {
       console.error('Error generating response:', error);
@@ -328,48 +299,155 @@ ${prompt.trim() ? `Additional evaluation criteria provided by instructor: ${prom
   };
 
   return (
-    <form onSubmit={handleSubmit} className="prompt-form">
-      <div className="file-upload-section">
-        <h3>Upload Assignment</h3>
-        <div className="file-input-container">
-          <input
-            type="file"
-            onChange={handleFileChange}
-            accept=".pdf,.txt,.docx,.csv"
-            ref={fileInputRef}
-          />
-          {fileName && (
-            <div className="file-info">
-              <span>{fileName}</span>
-              <button 
-                type="button" 
-                onClick={handleClearFile}
-                className="clear-file-btn"
+    <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Main Form Container */}
+        <div className="feature-card p-8 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl shadow-xl mb-8">
+          <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            AI Response System
+          </h2>
+
+          {/* File Upload Section */}
+          <div className="mb-8">
+            <label className="block text-sm font-medium text-purple-300 mb-2">
+              Upload Document
+            </label>
+            {!fileName ? (
+              <div 
+                className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-700 border-dashed rounded-lg hover:border-purple-500 transition-colors duration-200"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const droppedFile = e.dataTransfer.files[0];
+                  if (droppedFile) {
+                    const event = { target: { files: [droppedFile] } };
+                    handleFileChange(event);
+                  }
+                }}
               >
-                ×
-              </button>
+                <div className="space-y-1 text-center">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    stroke="currentColor"
+                    fill="none"
+                    viewBox="0 0 48 48"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="flex text-sm text-gray-400">
+                    <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-purple-400 hover:text-purple-300 focus-within:outline-none">
+                      <span>Upload a file</span>
+                      <input
+                        id="file-upload"
+                        name="file-upload"
+                        type="file"
+                        className="sr-only"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        accept=".pdf,.doc,.docx,.txt"
+                      />
+                    </label>
+                    <p className="pl-1">or drag and drop</p>
+                  </div>
+                  <p className="text-xs text-gray-500">PDF, DOC, DOCX or TXT up to 10MB</p>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-1 p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-shrink-0">
+                      <svg className="h-8 w-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-purple-300 truncate">
+                        {fileName}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {(file?.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveFile}
+                    className="text-sm text-red-400 hover:text-red-300 transition-colors duration-200"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Prompt Input Section */}
+          <div className="mb-8">
+            <label htmlFor="prompt" className="block text-sm font-medium text-purple-300 mb-2">
+              Your Question
+            </label>
+            <div className="mt-1">
+              <textarea
+                id="prompt"
+                name="prompt"
+                rows={4}
+                className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
+                placeholder="Ask your question here..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
             </div>
-          )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex justify-end">
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="px-6 py-3 text-white bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 rounded-lg font-medium shadow-lg hover:shadow-purple-500/25 transition duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {isLoading ? (
+                <div className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </div>
+              ) : (
+                'Get Response'
+              )}
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="prompt-section">
-        <h3>Additional Evaluation Criteria (Optional)</h3>
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter specific criteria or "
-          rows={3}
-          disabled={isLoading}
-        />
-      </div>
+        {/* Response Container */}
+        {response && (
+          <div className="feature-card p-8 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl shadow-xl">
+            <h3 className="text-2xl font-semibold mb-4 text-purple-300">AI Response</h3>
+            <div className="prose prose-invert max-w-none">
+              <div className="text-gray-300 leading-relaxed whitespace-pre-wrap rounded-lg">
+                {response}
+              </div>
+            </div>
+          </div>
+        )}
 
-      <button type="submit" disabled={isLoading || (!prompt.trim() && !fileContent)}>
-        {isLoading ? 'Evaluating...' : 'Evaluate Assignment'}
-      </button>
-      
-     
-    </form>
+        {/* Error Message */}
+        {error && (
+          <div className="mt-4 p-4 bg-red-900/50 border border-red-700 rounded-lg">
+            <p className="text-red-400">{error}</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
