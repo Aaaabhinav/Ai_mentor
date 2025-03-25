@@ -428,24 +428,9 @@ ${prompt.trim() ? `Additional evaluation criteria provided by instructor: ${prom
           </div>
         </div>
 
-        {/* Response Container */}
-        {response && (
-          <div className="feature-card p-8 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl shadow-xl">
-            <h3 className="text-2xl font-semibold mb-4 text-purple-300">AI Response</h3>
-            <div className="prose prose-invert max-w-none">
-              <div className="text-gray-300 leading-relaxed whitespace-pre-wrap rounded-lg">
-                {response}
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="mt-4 p-4 bg-red-900/50 border border-red-700 rounded-lg">
-            <p className="text-red-400">{error}</p>
-          </div>
-        )}
+       
+      
       </div>
     </div>
   );

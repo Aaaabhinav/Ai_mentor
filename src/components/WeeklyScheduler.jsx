@@ -133,17 +133,11 @@ function WeeklyScheduler() {
           </button>
         </div>
         
-        {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-            {error}
-          </div>
-        )}
+       
         
-        {evaluationResult && (
+        { (evaluationResult && !error) && (
           <div className="feature-card overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl shadow-xl">
-            <div className="p-6 bg-gradient-to-r from-purple-500/90 to-purple-700/90 border-b border-purple-600/30">
-              <h2 className="text-2xl font-semibold text-white">Evaluation Results</h2>
-            </div>
+            
             <div className="p-6">
               <EvaluationResult result={evaluationResult} />
             </div>
